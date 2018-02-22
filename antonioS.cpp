@@ -6,6 +6,7 @@
 
 
 using namespace std;
+//turn physics for asteroids on and off
 void physicSwitch(Asteroid *a, bool value) 
 {
     if (value) {
@@ -20,6 +21,7 @@ void buildAsteroidFragment2(Asteroid *ta, Asteroid *a)
 {
         //build ta from a
         ta->nverts = 8;
+	//turns physics for the asteroid fragments off
         physicSwitch(ta, true);
         ta->radius = a->radius / 2.0;
         Flt r2 = ta->radius / 2.0;
