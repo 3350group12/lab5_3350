@@ -565,7 +565,7 @@ void physics()
 	//
 	//Update asteroid positions
 	Asteroid *a = g.ahead;
-	
+	//checks if asteroid has physics turn on or off
 	while (a && a->physics) {
 		a->pos[0] += a->vel[0];
 		a->pos[1] += a->vel[1];
