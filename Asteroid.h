@@ -33,6 +33,7 @@ public:
         struct Asteroid *next;
 public:
         Asteroid() {
+                //Physics for asteroids won't work, hence it asteroids will stay in place
                 physics = false;
                 prev = NULL;
                 next = NULL;
