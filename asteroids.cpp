@@ -484,9 +484,11 @@ void deleteAsteroid(Game *g, Asteroid *node)
 
 void buildAsteroidFragment(Asteroid *ta, Asteroid *a)
 {
+
+	extern void physicSwitch(Asteroid *a, bool value);
 	//build ta from a
 	ta->nverts = 8;
-	ta->physics = true;
+	physicSwitch(ta, true);
 	ta->radius = a->radius / 2.0;
 	Flt r2 = ta->radius / 2.0;
 	Flt angle = 0.0f;
@@ -607,8 +609,7 @@ void physics()
 				if (a->radius > MINIMUM_ASTEROID_SIZE) {
 					//break it into pieces.
 					Asteroid *ta = a;
-					extern void buildAsteroidFragment2(Asteroid *ta, Asteroid *a);
-					buildAsteroidFragment2(ta, a);
+					buildAsteroidFragment(ta, a);
 					int r = rand()%10+5;
 					for (int k=0; k<r; k++) {
 						//get the next asteroid position in the array
