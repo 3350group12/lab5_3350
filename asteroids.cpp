@@ -42,6 +42,8 @@ extern double timeDiff(struct timespec *start, struct timespec *end);
 extern void timeCopy(struct timespec *dest, struct timespec *source);
 //-----------------------------------------------------------------------------
 
+extern void nick();
+
 class Global {
 public:
 	int xres, yres;
@@ -64,7 +66,8 @@ public:
 	Ship() {
 		VecZero(dir);
 		pos[0] = (Flt)(gl.xres/2);
-		pos[1] = (Flt)(gl.yres/2);
+//		pos[1] = (Flt)(gl.yres/2);
+		pos[1] = (Flt)(15);
 		pos[2] = 0.0f;
 		VecZero(vel);
 		angle = 0.0;
@@ -148,25 +151,30 @@ private:
 	GLXContext glc;
 public:
 	X11_wrapper() {
-		GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
+		GLint att[] =
+		{ GLX_RGBA, GLX_DEPTH_SIZE, 24, GLX_DOUBLEBUFFER, None };
 		//GLint att[] = { GLX_RGBA, GLX_DEPTH_SIZE, 24, None };
 		XSetWindowAttributes swa;
 		setup_screen_res(gl.xres, gl.yres);
 		dpy = XOpenDisplay(NULL);
 		if (dpy == NULL) {
-			std::cout << "\n\tcannot connect to X server" << std::endl;
+			std::cout << "\n\tcannot connect to X server"
+			    << std::endl;
 			exit(EXIT_FAILURE);
 		}
 		Window root = DefaultRootWindow(dpy);
 		XVisualInfo *vi = glXChooseVisual(dpy, 0, att);
 		if (vi == NULL) {
-			std::cout << "\n\tno appropriate visual found\n" << std::endl;
+			std::cout << "\n\tno appropriate visual found\n"
+			    << std::endl;
 			exit(EXIT_FAILURE);
 		} 
-		Colormap cmap = XCreateColormap(dpy, root, vi->visual, AllocNone);
+		Colormap cmap =
+		    XCreateColormap(dpy, root, vi->visual, AllocNone);
 		swa.colormap = cmap;
 		swa.event_mask = ExposureMask | KeyPressMask | KeyReleaseMask |
-			PointerMotionMask | MotionNotify | ButtonPress | ButtonRelease |
+			PointerMotionMask | MotionNotify | ButtonPress |
+			ButtonRelease |
 			StructureNotifyMask | SubstructureNotifyMask;
 		win = XCreateWindow(dpy, root, 0, 0, gl.xres, gl.yres, 0,
 				vi->depth, InputOutput, vi->visual,
@@ -238,13 +246,15 @@ public:
 		blank = XCreateBitmapFromData (dpy, win, data, 1, 1);
 		if (blank == None)
 			std::cout << "error: out of memory." << std::endl;
-		cursor = XCreatePixmapCursor(dpy, blank, blank, &dummy, &dummy, 0, 0);
+		cursor = XCreatePixmapCursor(dpy, blank, blank, &dummy, &dummy,
+			0, 0);
 		XFreePixmap(dpy, blank);
 		//this makes you the cursor. then set it using this function
 		XDefineCursor(dpy, win, cursor);
 		//after you do not need the cursor anymore use this function.
 		//it will undo the last change done by XDefineCursor
-		//(thus do only use ONCE XDefineCursor and then XUndefineCursor):
+		//(thus do only use ONCE XDefineCursor
+		//and then XUndefineCursor):
 	}
 } x11;
 
@@ -269,7 +279,7 @@ int main()
 		while (x11.getXPending()) {
 			XEvent e = x11.getXNextEvent();
 			x11.check_resize(&e);
-			check_mouse(&e);
+//			check_mouse(&e);
 			done = check_keys(&e);
 		}
 		physics();
@@ -354,7 +364,8 @@ void check_mouse(XEvent *e)
 					b->vel[0] = g.ship.vel[0];
 					b->vel[1] = g.ship.vel[1];
 					//convert ship angle to radians
-					Flt rad = ((g.ship.angle+SHIFT_ANGLE) / COMPLETE_ANGLE) * PI * 2.0;
+					Flt rad = ((g.ship.angle+SHIFT_ANGLE) /
+						COMPLETE_ANGLE) * PI * 2.0;
 					//convert angle to a vector
 					Flt xdir = cos(rad);
 					Flt ydir = sin(rad);
@@ -395,12 +406,15 @@ void check_mouse(XEvent *e)
 				//mouse moved along the y-axis.
 				//apply thrust
 				//convert ship angle to radians
-				Flt rad = ((g.ship.angle+SHIFT_ANGLE) / COMPLETE_ANGLE) * PI * 2.0;
+				Flt rad = ((g.ship.angle+SHIFT_ANGLE) /
+					COMPLETE_ANGLE) * PI * 2.0;
 				//convert angle to a vector
 				Flt xdir = cos(rad);
 				Flt ydir = sin(rad);
-				g.ship.vel[0] += xdir * (float)ydiff * SHIFT_OVER;
-				g.ship.vel[1] += ydir * (float)ydiff * SHIFT_OVER;
+				g.ship.vel[0] += xdir * (float)ydiff *
+				    SHIFT_OVER;
+				g.ship.vel[1] += ydir * (float)ydiff *
+				    SHIFT_OVER;
 				Flt speed = sqrt(g.ship.vel[0]*g.ship.vel[0]+
 					g.ship.vel[1]*g.ship.vel[1]);
 				if (speed > SHIP_SPEED) {
@@ -410,7 +424,8 @@ void check_mouse(XEvent *e)
 					g.ship.vel[1] *= speed;
 				}
 				g.mouseThrustOn = true;
-				clock_gettime(CLOCK_REALTIME, &g.mouseThrustTimer);
+				clock_gettime(CLOCK_REALTIME,
+					&g.mouseThrustTimer);
 			}
 			x11.set_mouse_position(100, 100);
 			savex = savey = 100;
@@ -612,10 +627,12 @@ void physics()
 					buildAsteroidFragment(ta, a);
 					int r = rand()%10+5;
 					for (int k=0; k<r; k++) {
-						//get the next asteroid position in the array
+						//get the next asteroid position
+						//in the array
 						Asteroid *ta = new Asteroid;
 						buildAsteroidFragment(ta, a);
-						//add to front of asteroid linked list
+						//add to front of asteroid
+						//linked list
 						ta->next = g.ahead;
 						if (g.ahead != NULL)
 							g.ahead->prev = ta;
@@ -635,7 +652,8 @@ void physics()
 					g.nasteroids--;
 				}
 				//delete the bullet...
-				memcpy(&g.barr[i], &g.barr[g.nbullets-1], sizeof(Bullet));
+				memcpy(&g.barr[i], &g.barr[g.nbullets-1],
+					sizeof(Bullet));
 				g.nbullets--;
 				if (a == NULL)
 					break;
@@ -693,7 +711,8 @@ void physics()
 				b->vel[0] = g.ship.vel[0];
 				b->vel[1] = g.ship.vel[1];
 				//convert ship angle to radians
-				Flt rad = ((g.ship.angle+90.0) / 360.0f) * PI * 2.0;
+				Flt rad = ((g.ship.angle+90.0) / 360.0f) *
+				    PI * 2.0;
 				//convert angle to a vector
 				Flt xdir = cos(rad);
 				Flt ydir = sin(rad);
@@ -720,6 +739,7 @@ void physics()
 
 void render()
 {
+
 	Rect r;
 	glClear(GL_COLOR_BUFFER_BIT);
 	//
@@ -729,7 +749,9 @@ void render()
 	ggprint8b(&r, 16, 0x00ff0000, "3350 - Asteroids");
 	ggprint8b(&r, 16, 0x00ffff00, "n bullets: %i", g.nbullets);
 	ggprint8b(&r, 16, 0x00ffff00, "n asteroids: %i", g.nasteroids);
-	ggprint8b(&r, 16, 0x00ffff00, "n asteroids destroyed: %i", g.asterdestroyed);
+	ggprint8b(&r, 16, 0x00ffff00, "n asteroids destroyed: %i",
+		g.asterdestroyed);
+	nick();
 	//
 	//-------------
 	//Draw the ship
@@ -784,7 +806,8 @@ void render()
 			glBegin(GL_TRIANGLE_FAN);
 				//Log("%i verts\n",a->nverts);
 				for (int j=0; j<a->nverts; j++) {
-					glVertex2f(a->vert[j][0], a->vert[j][1]);
+					glVertex2f(a->vert[j][0],
+						a->vert[j][1]);
 				}
 			glEnd();
 			glPopMatrix();
